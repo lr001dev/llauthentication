@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Form, Col, Button } from 'react-bootstrap'
 import { BASE_URL } from '../constants.js'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const Login = ({ setloggedIn }) => {
   const [ email, setEmail ] = useState('')
@@ -15,6 +17,14 @@ const Login = ({ setloggedIn }) => {
       }
     }
     loginUser(formInputs)
+    setEmail('')
+    setPassword('')
+  }
+
+  const notify = () => {
+    toast.error("Invalid Login Please Try Again !", {
+        position: toast.POSITION.TOP_CENTER
+      })
   }
 
   const loginUser = (formInputs) => {
@@ -29,41 +39,49 @@ const Login = ({ setloggedIn }) => {
       }
     }).then(loginResponse => loginResponse.json())
       .then((userIsLoggedIn) => {
-        setloggedIn(userIsLoggedIn)
+        if(userIsLoggedIn.status === 401 ) {
+          setloggedIn(false)
+          notify()
+        } else {
+          setloggedIn(userIsLoggedIn)
+        }
       })
       .catch(error=> console.log(error))
   }
 
   return(
     <>
-    <Form  onSubmit={handleSubmit}>
-        <Form.Row className="login-form" >
-          <Col>
-            <Form.Control
-              id="email"
-              type="text"
-              onChange={(event) => {
-                setEmail(event.target.value)
-              }}
-              value= { email }
-              placeholder="Email"
-            />
-          </Col>
-          <Col>
-            <Form.Control
-              id="password"
-              type="text"
-              onChange={(event) => {
-                setPassword(event.target.value)
-              }}
-              value= { password }
-              placeholder="password"
-            />
-          </Col>
-        </Form.Row>
-        <Form.Row>
-          <Button className="login-button" variant="primary" type="submit">Login</Button>
-        </Form.Row>
+      <ToastContainer
+          autoClose= { 3000 }
+      />
+      <Form onSubmit={handleSubmit} className="login-form">
+        <Form.Group >
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            required
+            id="email"
+            type="email"
+            onChange={(event) => {
+              setEmail(event.target.value)
+            }}
+            value= { email }
+            placeholder="Email"
+          />
+        </Form.Group>
+        <Form.Group >
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            required
+            id="password"
+            type="text"
+            onChange={(event) => {
+              setPassword(event.target.value)
+            }}
+            value= { password }
+            placeholder="password"
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit">Login</Button>
       </Form>
     </>
   )

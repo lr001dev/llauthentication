@@ -10,7 +10,6 @@ const useCheckUser = (url) => {
     .then(response => response.json())
     .then((userIsLoggedIn) => {
       setUser(userIsLoggedIn)
-      console.log(userIsLoggedIn)
     }).catch(err=> console.log(err))
   }, [url])
 
