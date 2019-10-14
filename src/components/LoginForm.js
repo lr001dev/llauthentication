@@ -1,12 +1,18 @@
-import React, { useState } from 'react'
-import { Form, Col, Button } from 'react-bootstrap'
-import { BASE_URL } from '../constants.js'
-import { ToastContainer, toast } from 'react-toastify'
+import React, { useState, useEffect } from 'react'
+import { Form, Button } from 'react-bootstrap'
+import useLoginUser from '../hooks/useLoginUser'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Login = ({ setloggedIn }) => {
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
+  const [formInputs, setFormInputs] = useState('')
+  const { user }  = useLoginUser(formInputs)
+
+  useEffect(() => {
+    setloggedIn(user)
+  }, [user])
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -16,37 +22,10 @@ const Login = ({ setloggedIn }) => {
         password: password
       }
     }
-    loginUser(formInputs)
+    // loginUser(formInputs)
+    setFormInputs(formInputs)
     setEmail('')
     setPassword('')
-  }
-
-  const notify = () => {
-    toast.error("Invalid Login Please Try Again !", {
-        position: toast.POSITION.TOP_CENTER
-      })
-  }
-
-  const loginUser = (formInputs) => {
-
-    fetch(`${ BASE_URL }/users/login/`, {
-      body: JSON.stringify(formInputs),
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-type': 'application/json'
-      }
-    }).then(loginResponse => loginResponse.json())
-      .then((userIsLoggedIn) => {
-        if(userIsLoggedIn.status === 401 ) {
-          setloggedIn(false)
-          notify()
-        } else {
-          setloggedIn(userIsLoggedIn)
-        }
-      })
-      .catch(error=> console.log(error))
   }
 
   return(
@@ -54,6 +33,7 @@ const Login = ({ setloggedIn }) => {
       <ToastContainer
           autoClose= { 3000 }
       />
+      <h1 className="form-header-text">Welcome Back! </h1>
       <Form onSubmit={handleSubmit} className="login-form">
         <Form.Group >
           <Form.Label>Email address</Form.Label>
@@ -81,7 +61,7 @@ const Login = ({ setloggedIn }) => {
             placeholder="password"
           />
         </Form.Group>
-        <Button variant="primary" type="submit">Login</Button>
+        <Button variant="success" type="submit">Login</Button>
       </Form>
     </>
   )
