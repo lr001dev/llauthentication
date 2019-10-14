@@ -12,5 +12,6 @@ Download and install backend api located here:
 git clone https://github.com/lr001dev/llauthapi.git
 
 ## Features
-Pop up error notification with Toastify
+Pop up error notification with Toastify.
 Auto login on user signup.
+User Authentication with HTTP Only Cookie (JWT).
